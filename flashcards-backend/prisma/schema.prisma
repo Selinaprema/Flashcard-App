@@ -1,0 +1,68 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ReviewRating {
+  MEMORISED
+  PRACTICE
+  DONT_KNOW
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  topics     Topic[]
+  flashcards Flashcard[]
+  reviews    Review[]
+}
+
+model Topic {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  flashcards Flashcard[]
+
+  @@unique([name, userId])
+}
+
+model Flashcard {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+
+  userId  String
+  topicId String
+
+  user  User  @relation(fields: [userId], references: [id])
+  topic Topic @relation(fields: [topicId], references: [id])
+
+  reviews Review[]
+}
+
+model Review {
+  id           String        @id @default(uuid())
+  rating       ReviewRating
+  nextReviewAt DateTime
+  createdAt    DateTime      @default(now())
+
+  userId      String
+  flashcardId String
+
+  user      User      @relation(fields: [userId], references: [id])
+  flashcard Flashcard @relation(fields: [flashcardId], references: [id])
+
+  @@index([userId, nextReviewAt])
+}
