@@ -5,19 +5,22 @@ import { PrismaService } from '../prisma/prisma.service';
 export class TopicsService {
   constructor(private prisma: PrismaService) {}
 
-  async createTopic(name: string) {
-    return this.prisma.topic.create({
-      data: {
-        name,
-      },
-    });
-  }
 
-  async getAllTopics() {
-    return this.prisma.topic.findMany({
-      orderBy: {
-        createdAt: 'desc',
+async createTopic(name: string, userId: string) {
+  return this.prisma.topic.create({
+    data: {
+      name,
+      user: {
+        connect: { id: userId },
       },
-    });
-  }
+    },
+  });
+}
+
+async getAllTopics(userId: string) {
+  return this.prisma.topic.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+  });
+}
 }
