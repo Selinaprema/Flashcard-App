@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     PrismaModule,
-    TopicsModule,      // <-- THIS MUST BE HERE
+    TopicsModule,      
     FlashcardsModule, AuthModule,
   ],
 })
